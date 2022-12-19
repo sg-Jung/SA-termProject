@@ -16,23 +16,26 @@ import org.json.JSONArray
 import org.json.JSONObject
 import java.net.URLEncoder
 
+
+// 서버에서 Json을 받아와 파싱을 하고 사용자에게 데이터를 제공하기 위한 클래스
 class NpcViewModel(application: Application): AndroidViewModel(application) {
     data class Npc(var name: String, var l_name: String, var image: String)
 
-    companion object{
+    companion object{ // 상수값 사용을 위해 사용
         const val QUEUE_TAG = "NpcVolleyRequest"
         const val SERVER_URL = "https://testjsgjsg.run.goorm.io"
     }
 
     private val npcs = ArrayList<Npc>()
+    // Observer 패턴을 사용하기 위해 LiveData사용
     private val _list = MutableLiveData<ArrayList<Npc>>()
     val list: LiveData<ArrayList<Npc>>
         get() = _list
 
-    private var queue: RequestQueue
-    val imageLoader: ImageLoader
+    private var queue: RequestQueue // Volley의 RequestQueue를 사용
+    val imageLoader: ImageLoader // image를 불러오기 위해 사용
 
-    init{
+    init{ // 초기화
         _list.value = npcs
         queue = Volley.newRequestQueue(getApplication())
 
@@ -51,7 +54,7 @@ class NpcViewModel(application: Application): AndroidViewModel(application) {
 
     fun getImageUrl(i: Int): String = "$SERVER_URL/image/" + URLEncoder.encode(npcs[i].image, "utf-8")
 
-    fun requestNpc(){
+    fun requestNpc(){ // 서버에 NPC정보를 요청
 
         val request = JsonArrayRequest(
             Request.Method.GET,
@@ -59,7 +62,7 @@ class NpcViewModel(application: Application): AndroidViewModel(application) {
             null,
             {
                 npcs.clear()
-                parseJson(it)
+                parseJson(it) // 파싱 후 list에 저장
                 _list.value = npcs
             },
             {
@@ -71,7 +74,7 @@ class NpcViewModel(application: Application): AndroidViewModel(application) {
         queue.add(request)
     }
 
-    private fun parseJson(items: JSONArray){
+    private fun parseJson(items: JSONArray){ // Json 파싱 함수
         for(i in 0 until items.length()){
             val item: JSONObject = items[i] as JSONObject
             val name = item.getString("name")

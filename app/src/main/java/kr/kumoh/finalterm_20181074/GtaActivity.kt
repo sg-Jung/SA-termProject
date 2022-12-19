@@ -37,6 +37,7 @@ class GtaActivity : AppCompatActivity() {
                 }
             })
 
+        // intent로 전송한 값들을 Key로 받아와 사용한다.
         binding.imageNpc.setImageUrl(intent.getStringExtra(KEY_IMAGE), imageLoader)
         binding.textLocate.text = intent.getStringExtra(KEY_LOCATE)
         binding.textName.text = intent.getStringExtra(KEY_NAME)
